@@ -1,4 +1,4 @@
-let arr =[10,20,88,64,85]
+let arr =[10,25,88,64,85]
 let n = arr.length;
 
 for(let i=0; i<n ; i++){

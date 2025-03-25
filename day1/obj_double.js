@@ -5,5 +5,5 @@ let obj={
     'd':'7'
 }
 for(let key in obj){
-    console.log(obj[key]*2)
+    console.log(key, obj[key]*2)
 }
