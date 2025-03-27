@@ -1,21 +1,17 @@
-// Debounce function
 function debounce(func, delay) {
     let timeout;
-    return function (...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
-            func.apply(this, args);
-        }, delay);
+    return function () {
+        clearTimeout(timeout); 
+        timeout = setTimeout(func, delay); 
     };
 }
 
-function search(query) {
-    console.log('Searching for:', query);
+function hello() {
+    console.log('Hello!');
 }
 
+const debouncedHello = debounce(hello, 2000);
 
-const dSearch = debounce(search, 100);
-
-dSearch('Hello');
-dSearch('Hello, ');
-dSearch('Hello, World!');
+debouncedHello();
+ 
+setTimeout(debouncedHello,4000)
