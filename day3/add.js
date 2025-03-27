@@ -8,8 +8,8 @@ const data = [
 function flatten(arr){
     return arr.map(obj=>
         Object.values(obj)
-        .flat(obj)
-        .filter((value)=>typeof val=== 'number')
+        .flatMap((obj)=>obj)
+        .filter((value)=>typeof value=== 'number')
         .reduce((sum,num)=>{
             return sum+num;
         },0)
