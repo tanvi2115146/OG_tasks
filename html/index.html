@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="style.css">
-    <title>login & register</title>
+    <title>Login & Register</title>
     <style>
-        .form{
-            display:none;
+        .form {
+            display: none;
         }
     </style>
 </head>
@@ -17,7 +17,7 @@
     <div class="wrapper">
         <nav class="nav">
             <div class="nav-logo">
-                <p >Logo</p>
+                <p>Logo</p>
             </div>
 
             <div class="nav-menu">
@@ -25,7 +25,7 @@
                     <li><a href="#" class="link">Home</a></li>
                     <li><a href="#" class="link">About</a></li>
                     <li><a href="#" class="link">Services</a></li>
-                    <li><a href="#" class="link">contact</a></li>
+                    <li><a href="#" class="link">Contact</a></li>
                 </ul>
             </div>
 
@@ -35,77 +35,68 @@
             </div>
         </nav>
 
-
-<!--------------------------------signUp-------------------------------->
+        <!-- SignUp Form -->
         <div class="form-container">
-            <div class="form" id="form1">
-                <div class="register-container" >
-                    <header>Sign up</header>
+            <form class="form" id="form1">
+                <div class="register-container">
+                    <header>Sign Up</header>
                 </div>
                 <div class="two-forms">
                     <div class="input-box">
-                        <input type="text" class="input-field" placeholder="firstname">
+                        <input type="text" class="input-field" placeholder="First Name" required>
                     </div>
         
                     <div class="input-box">
-                        <input type="text" class="input-field" placeholder="lastName">
+                        <input type="text" class="input-field" placeholder="Last Name" required>
                     </div>
                     
                     <div class="input-box">
-                        <input type="text" class="input-field" placeholder="Email">
+                        <input type="email" class="input-field" placeholder="Email" required>
                     </div>
         
                     <div class="input-box">
-                        <input type="text" class="input-field" placeholder="Password">
+                        <input type="password" class="input-field" placeholder="Password" required>
                     </div>
                 </div>  
                 <div class="submit">
-                    <button class="butn">Submit</button>
+                    <button class="butn" type="submit">Submit</button>
                 </div>  
-            </div>
+            </form>
 
-
-            
-            <!----------------------------------login---------------->
-
-            <div class="form" id="form2">
-                <div class="register-container" >
-                    <header>login</header>
+            <!-- Login Form -->
+            <form class="form" id="form2">
+                <div class="register-container">
+                    <header>Login</header>
                 </div>
-
                 <div class="two-forms">
                     <div class="input-box">
-                        <input type="text" class="input-field" placeholder="Email">
+                        <input type="email" class="input-field" placeholder="Email" required>
                     </div>
         
                     <div class="input-box">
-                        <input type="text" class="input-field" placeholder="Password">
+                        <input type="password" class="input-field" placeholder="Password" required>
                     </div>
-
-                    <div class="submit">
-                        <button class="butn">login</button>
-                    </div> 
-            </div>  
-
-        </div>    
+                </div>
+                <div class="submit">
+                    <button class="butn" type="submit">Login</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
-
-    
 
 <script>
-    function showForm(formId){
-        let forms=document.querySelectorAll('.form');
-        forms.forEach(form=>{
-            form.style.display="none";
-        })
+    function showForm(formId) {
+        let forms = document.querySelectorAll('.form');
+        forms.forEach(form => {
+            form.style.display = "none";
+        });
 
-        let selectedForm=document.getElementById(formId)
-        if(selectedForm){
-            selectedForm.style.display="block";
+        let selectedForm = document.getElementById(formId);
+        if (selectedForm) {
+            selectedForm.style.display = "block";
         }
-      }
+    }
 </script>
-        
+
 </body>
 </html>
