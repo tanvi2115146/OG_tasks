@@ -9,7 +9,7 @@ function flatten(arr){
     return arr.map(obj=>
         Object.values(obj)
         .flatMap((obj)=>obj)
-        .filter((value)=>typeof value=== 'number')
+        .filter((value)=>typeof value  === 'number')
         .reduce((sum,num)=>{
             return sum+num;
         },0)

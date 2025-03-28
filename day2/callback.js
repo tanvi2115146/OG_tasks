@@ -1,9 +1,9 @@
-//map
+//map 
 
-let r1=[45,34,78,23,90]
+// let r1=[45,34,78,23,90]
 
-const r2=Array.prototype.map(r1,(x)=>x*2);
-console.log(r2); 
+// const r2=Array.prototype.map(r1,(x)=>x*2);
+// console.log(r2); 
 
 
 //lastindex
@@ -74,8 +74,9 @@ console.log(numAdd(arr));
 
 function Add(arr){
     return arr.map(obj =>
-        (Object.values(obj)|| arr.values())
-            .filter(value => typeof value === 'number'||'object')
+        Object.values(obj).
+        flat(obj)
+            .filter(value => typeof value === 'number')
             .reduce((sum,num)=>sum + num,0)
         );
 }
