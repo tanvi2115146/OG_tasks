@@ -84,19 +84,33 @@
         </div>
     </div>
 
-<script>
-    function showForm(formId) {
-        let forms = document.querySelectorAll('.form');
-        forms.forEach(form => {
-            form.style.display = "none";
-        });
 
-        let selectedForm = document.getElementById(formId);
-        if (selectedForm) {
-            selectedForm.style.display = "block";
-        }
-    }
-</script>
+
+    <div id="taskContainer" style="display: none;">
+        <h2>Task List</h2>
+        <input type="text" id="taskInput" placeholder="Enter a task">
+        <button onclick="saveTodo(document.getElementById('taskInput').value)">Add Task</button>
+        
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Task</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="taskBody"></tbody>
+        </table>
+    
+        <button onclick="logoutUser()">Logout</button>
+    </div>
+    
+<script src="index.js"></script>
 
 </body>
 </html>
+
+
+
+   
+
+
