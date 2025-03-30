@@ -1,103 +1,22 @@
-// the selected form
-function showForm(formId) {
-    let forms = document.querySelectorAll('.form');
-    forms.forEach(form => {
-        form.style.display = "none";
-    });
 
-    let selectedForm = document.getElementById(formId);
-    if (selectedForm) {
-        selectedForm.style.display = "block";
-    }
+function saveUser(user) {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            let users = JSON.parse(localStorage.getItem("users")) || [];
+            users.push(user);
+            localStorage.setItem("users", JSON.stringify(users));
+            resolve();
+        }, 500);
+    });
 }
 
-
-
-
-const StorageModule = (() => {
-    const data = "users"; 
-
-    function getLocalStorageData(key) {
-        return JSON.parse(localStorage.getItem(key)) || [];
-    }
-
-    function saveUser(user) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                let users = getLocalStorageData(data);
-                users.push(user);
-                localStorage.setItem(data, JSON.stringify(users));
-                resolve("signed up successful");
-            },0);
-        });
-    }
-
-    function getUsers() {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve(getLocalStorageData(data));
-            }, 500);
-        });
-    }
-
-    function loginUser(email, password) {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                const users = getLocalStorageData(data);
-                const user = users.find(u => u.email === email && u.password === password);
-                if (user) {
-                    resolve("Login successful");
-                } else {
-                    reject("Invalid");
-                }
-            }, 500);
-        });
-    }
-
-    return {
-        saveUser,
-        getUsers,
-        loginUser
-    };
-})();
-
-
-// Sign-up 
-document.getElementById("form1").addEventListener("submit", function(event) {
-    event.preventDefault();
-
-    const firstName = document.querySelector("#form1 input[placeholder='First Name']").value;
-    const lastName = document.querySelector("#form1 input[placeholder='Last Name']").value;
-    const email = document.querySelector("#form1 input[placeholder='Email']").value;
-    const password = document.querySelector("#form1 input[placeholder='Password']").value;
-
-    const newUser = { name: firstName + " " + lastName, email, password };
-
-    StorageModule.saveUser(newUser).then((message) => {
-        alert(message);
-        document.getElementById("form1").reset();
+function getUsers() {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve(JSON.parse(localStorage.getItem("users")) || []);
+        }, 500);
     });
-});
-
-
-// Login 
-document.getElementById("form2").addEventListener("submit", function(event) {
-    event.preventDefault();
-
-    const email = document.querySelector("#form2 input[placeholder='Email']").value;
-    const password = document.querySelector("#form2 input[placeholder='Password']").value;
-
-    StorageModule.loginUser(email, password)
-        .then((message) => {
-            alert(message);
-        })
-        .catch((error) => {
-            alert(error);
-        });
-});
-
-
-
+}
 
 
 
@@ -105,105 +24,148 @@ document.getElementById("form2").addEventListener("submit", function(event) {
 //todo
 
 
-function saveTodo() {
-    if (!currentUser) {
-        alert("Notlogged in ");
-        return;
-    }
-
-    let todos = JSON.parse(localStorage.getItem("todos")) || {};
-    if (!todos[currentUser]) {
-        todos[currentUser] = [];
-    }
-    todos[currentUser].push(taskInput);
-    localStorage.setItem("todos", JSON.stringify(todos));
-
-    document.getElementById("taskInput").value = ""; 
-    displayTasks();
-}
-
-
-function getTodos() {
-    let todos = JSON.parse(localStorage.getItem("todos")) || {};
-    return todos[currentUser] || [];
-}
 
 
 
-function displayTasks() {
-    if (!currentUser) return;
-
-    let taskBody = document.getElementById("taskBody");
-    let taskContainer = document.getElementById("taskContainer");
-    let formContainer = document.querySelector(".form-container");
-
-    if (!taskBody || !taskContainer || !formContainer) {
-        console.error("Elements missing in the HTML!");
-        return;
-    }
-
-    taskBody.innerHTML = "";
-
-    let tasks = getTodos();
-    tasks.forEach((task, index) => {
-        let row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${task}</td>
-            <td><button onclick="deleteTask(${index})">Delete</button></td>
-        `;
-        taskBody.appendChild(row);
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("addTaskBtn").addEventListener("click", () => {
+        let taskInput = document.getElementById("taskInput").value;
+        if (taskInput.trim() === "") {
+            alert("Please enter a task");
+            return;
+        }
+        saveTodo(taskInput);
     });
-
-    
-    formContainer.style.display = "none";
-    taskContainer.style.display = "block";
-}
-
-
-
-function deleteTask(index) {
-    let todos = JSON.parse(localStorage.getItem("todos")) || {};
-    if (!todos[currentUser]) return;
-
-    todos[currentUser].splice(index, 1);
-    localStorage.setItem("todos", JSON.stringify(todos));
-
-    displayTasks();
-}
-
-
-
-// Login function
-document.getElementById("form2").addEventListener("submit", function (event) {
-    event.preventDefault();
-
-    const email = document.querySelector("#form2 input[placeholder='Email']").value.trim();
-    const password = document.querySelector("#form2 input[placeholder='Password']").value.trim();
-
-    if (!email || !password) {
-        alert("Please enter both email and password!");
-        return;
-    }
-
-    StorageModule.loginUser(email, password)
-        .then((message) => {
-            alert(message); 
-            currentUser = email;
-            localStorage.setItem("currentUser", email);
-            displayTasks();
-        })
-        .catch((error) => {
-            alert(error);
-        });
 });
 
 
+
+
+function saveTodoToLocal(todo) {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            let todos = JSON.parse(localStorage.getItem("todos")) || []; 
+            if (!Array.isArray(todos)) { 
+                todos = []; 
+            }
+            todos.push(todo);
+            localStorage.setItem("todos", JSON.stringify(todos));
+            resolve();
+        }, 500);
+    });
+}
+
+
+function getTodos(email) {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            let todos = JSON.parse(localStorage.getItem("todos")) || [];
+            if (!Array.isArray(todos)) { 
+                todos = []; 
+            }
+            resolve(todos.filter(todo => todo.email === email));
+        }, 500);
+    });
+}
+
+
+// select form
+function showForm(formId) {
+    document.querySelectorAll(".form").forEach(form => form.style.display = "none");
+    document.getElementById(formId).style.display = "block";
+}
+
+// signup
+const signupForm = document.getElementById("form1");
+signupForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    let user = {
+        name: `${signupForm[0].value} ${signupForm[1].value}`,
+        email: signupForm[2].value,
+        password: signupForm[3].value
+    };
+    saveUser(user).then(() => alert("User registered"));
+    signupForm.reset();
+});
+
+//  login
+const loginForm = document.getElementById("form2");
+loginForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    let email = loginForm[0].value;
+    let password = loginForm[1].value;
+    
+    getUsers().then(users => {
+        let user = users.find(u => u.email === email && u.password === password);
+        if (user) {
+            localStorage.setItem("loggedUser", JSON.stringify(user));
+            alert("Login successful!");
+            loadTodos(user.email);
+            document.getElementById("taskContainer").style.display = "block";
+        } else {
+            alert("Invalid ");
+        }
+    });
+    loginForm.reset();
+});
+
+
+
+function saveTodo(taskTitle) {
+    let user = JSON.parse(localStorage.getItem("loggedUser"));
+    if (!user) {
+        alert("Please log in");
+        return;
+    }
+
+    let todo = { email: user.email, taskTitle };
+    
+    saveTodoToLocal(todo).then(() => {
+        document.getElementById("taskInput").value = ""; 
+        loadTodos(user.email); 
+    });
+}
+
+
+
+function loadTodos(email) {
+    getTodos(email).then(todos => {
+        console.log("Loading tasks:", todos);
+        let taskBody = document.getElementById("taskBody");
+        taskBody.innerHTML = "";
+
+
+        todos.forEach(todo => {
+            let row = document.createElement("tr");
+            row.innerHTML = `<td>${todo.taskTitle}</td>
+                <td><button onclick="deleteTodo('${todo.taskTitle}')">Delete</button></td>`;
+            taskBody.appendChild(row);
+        });
+    });
+}
+
+function deleteTodo(taskTitle) {
+    let user = JSON.parse(localStorage.getItem("loggedUser"));
+    if (!user) {
+        alert("Please log in first");
+        return;
+    }
+
+    let allTodos = JSON.parse(localStorage.getItem("todos")) || []; 
+
+    let updatedTodos = allTodos.filter(todo => !(todo.email === user.email && todo.taskTitle === taskTitle));
+    
+    localStorage.setItem("todos", JSON.stringify(updatedTodos)); 
+    loadTodos(user.email); 
+}
+
+
+
+
+// Logout
 function logoutUser() {
-    localStorage.removeItem("currentUser");
-    currentUser = null;
-    
-    
-    document.querySelector(".form-container").style.display = "block";
+    localStorage.removeItem("loggedInUser");
     document.getElementById("taskContainer").style.display = "none";
+    alert("Logged out ");
 }
 
