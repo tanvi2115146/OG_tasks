@@ -25,8 +25,6 @@ function getUsers() {
 
 
 
-
-
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("addTaskBtn").addEventListener("click", () => {
         let taskInput = document.getElementById("taskInput").value;
@@ -158,7 +156,7 @@ function deleteTodo(taskTitle) {
     localStorage.setItem("todos", JSON.stringify(updatedTodos)); 
     loadTodos(user.email); 
 }
-
+c
 
 
 
@@ -169,3 +167,13 @@ function logoutUser() {
     alert("Logged out ");
 }
 
+
+//dynamic delay
+
+function randomDelay() {
+    return Math.floor(Math.random() * (1000 - 200 + 1)) + 200;
+}
+
+setTimeout(() => {
+    console.log("Executed after random delay");
+}, randomDelay());
