@@ -30,8 +30,8 @@
             </div>
 
             <div class="nav-btn">
-                <button class="btn" id="sign-btn" onclick="showForm('form1')">SignUp</button>
-                <button class="btn" id="Login" onclick="showForm('form2')">Login</button>
+                <button class="btn" id="sign-btn">SignUp</button>
+                <button class="btn" id="Login">Login</button>
             </div>
         </nav>
 
@@ -88,25 +88,38 @@
 
     <div id="taskContainer" style="display: none;">
         <h2>Task List</h2>
+    
         <input type="text" id="searchInput" placeholder="Search tasks" oninput="debouncedSearch()">
         <input type="text" id="taskInput" placeholder="Enter a task">
         <button id="addTaskBtn">Add Task</button>
-
-        
+    
+ 
+        <label for="sortTodos">Sort by:</label>
+        <select id="sortTodos" onchange="updateSortOrder()">
+            <option value="date">Date (Newest First)</option>
+            <option value="name">Name (A-Z)</option>
+            <option value="priority">Priority (High → Low)</option>
+        </select>
+    
         <table border="1">
             <thead>
                 <tr>
                     <th>Task</th>
+                    <th>Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody id="taskBody"></tbody>
         </table>
     
-        <button onclick="logoutUser()">Logout</button>
+        <button onclick="logoutUser()" id="logoutBtn">Logout</button>
     </div>
     
-<script src="index.js"></script>
+
+<script type="module" src="index.js"></script>
+<script type="module" src="auth.js"></script>
+<script type="module" src="todo.js"></script>
+
 
 </body>
 </html>
