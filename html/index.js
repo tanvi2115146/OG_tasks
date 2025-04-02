@@ -1,5 +1,5 @@
 import {showForm, signupUser,loginUser,logoutUser } from "./auth.js";
-import { debouncedSearch, searchTodos ,updateSortOrder } from "./todo.js";
+import { debouncedSearch, nextPage, prevPage, searchTodos ,updateSortOrder } from "./todo.js";
 
 export{saveTodo,saveTodoToLocal,getTodos,editTodo,deleteTodo,loadTodos,
     saveEditedTodo,updateTaskList ,sortTodos,updateSortOrder}from "./todo.js"
@@ -19,7 +19,9 @@ document.getElementById("searchInput").addEventListener("input", debouncedSearch
 
 document.getElementById("sortTodos").addEventListener("change", updateSortOrder);
 
+document.getElementById("prevPageBtn").addEventListener("click",()=>prevPage);
 
+document.getElementById("nextPageBtn").addEventListener("click",()=>nextPage);
 
 
 

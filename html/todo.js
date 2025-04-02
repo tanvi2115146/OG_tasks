@@ -78,11 +78,19 @@ function loadTodos(email, todos = null, sortBy = "date") {
 
 
 
+let currentPage = 1;
+const tasksPerPage = 5;
+
+
 function updateTaskList(todos) {
     let taskBody = document.getElementById("taskBody");
     taskBody.innerHTML = "";
 
-    todos.forEach(todo => {
+    let start = (currentPage - 1) * tasksPerPage;
+    let end = start + tasksPerPage;
+    let paginatedTodos = todos.slice(start, end);
+
+    paginatedTodos.forEach(todo => {
         let row = document.createElement("tr");
         row.setAttribute("data-task", todo.taskTitle);
 
@@ -102,6 +110,10 @@ function updateTaskList(todos) {
         statusDropdown.addEventListener("change", (event) => updateTaskStatus(todo.taskTitle, event.target.value));
         statusCell.appendChild(statusDropdown);
 
+        // Created Date Cell
+        let dateCell = document.createElement("td");
+        dateCell.textContent = new Date(todo.createdAt).toLocaleString(); 
+
         // Edit and Delete Buttons
         let editButton = document.createElement("button");
         editButton.textContent = "Edit";
@@ -117,6 +129,7 @@ function updateTaskList(todos) {
 
         row.appendChild(taskCell);
         row.appendChild(statusCell);
+        row.appendChild(dateCell); 
         row.appendChild(actionCell);
         taskBody.appendChild(row);
     });
@@ -239,9 +252,12 @@ function searchTodos(query) {
             todo.taskTitle.toLowerCase().includes(query.toLowerCase())
         );
 
+        currentPage = 1; 
         updateTaskList(filteredTodos);
+        updatePaginationControls(filteredTodos.length);
     });
 }
+
 
 const debouncedSearch = debounce(() => {
     let query = document.getElementById("searchInput").value;
@@ -254,31 +270,95 @@ const debouncedSearch = debounce(() => {
 function sortTodos(todos, criteria) {
     return todos.sort((a, b) => {
         if (criteria === "name") {
-            return a.taskTitle.localeCompare(b.taskTitle); // Sort A-Z
+            return a.taskTitle.localeCompare(b.taskTitle); 
         } else if (criteria === "date") {
-            return new Date(b.createdAt) - new Date(a.createdAt); // Newest First
+            return new Date(b.createdAt) - new Date(a.createdAt);
         } else if (criteria === "priority") {
-            const priorityOrder = { "complete": 1, "In progress": 2, "pending": 3 };
-            return priorityOrder[a.priority] - priorityOrder[b.priority]; 
+            const priorityOrder = { "complete": 3, "in progress": 2, "pending": 1 };
+            return priorityOrder[b.status.toLowerCase()] - priorityOrder[a.status.toLowerCase()];
         }
     });
 }
-
 
 
 function updateSortOrder() {
     let sortBy = document.getElementById("sortTodos").value;
     let user = JSON.parse(localStorage.getItem("loggedUser"));
     if (user) {
-        loadTodos(user.email, null, sortBy);
+        getTodos(user.email).then(todos => {
+            let sortedTodos = sortTodos(todos, sortBy);
+            currentPage = 1; 
+            updateTaskList(sortedTodos);
+            updatePaginationControls(sortedTodos.length);
+        });
     }
 }
 
+
 window.updateSortOrder = updateSortOrder;
+
+
+
+function updatePaginationControls(totalTasks) {
+    document.getElementById("pageNumber").textContent = `Page ${currentPage}`;
+
+    document.getElementById("prevPageBtn").disabled = currentPage === 1;
+    document.getElementById("nextPageBtn").disabled = currentPage * tasksPerPage >= totalTasks;
+}
+
+function nextPage() {
+    let user = JSON.parse(localStorage.getItem("loggedUser"));
+    if (!user) return;
+
+    getTodos(user.email).then(todos => {
+        let sortBy = document.getElementById("sortTodos").value;
+        let query = document.getElementById("searchInput").value.trim().toLowerCase();
+
+        // Apply sorting 
+        let filteredTodos = todos.filter(todo => 
+            todo.taskTitle.toLowerCase().includes(query)
+        );
+        let sortedTodos = sortTodos(filteredTodos, sortBy);
+
+        if (currentPage * tasksPerPage < sortedTodos.length) {
+            currentPage++;
+            updateTaskList(sortedTodos);
+            updatePaginationControls(sortedTodos.length);
+        }
+    });
+}
+
+function prevPage() {
+    let user = JSON.parse(localStorage.getItem("loggedUser"));
+    if (!user) return;
+
+    if (currentPage > 1) {
+        currentPage--;
+
+        getTodos(user.email).then(todos => {
+            let sortBy = document.getElementById("sortTodos").value;
+            let query = document.getElementById("searchInput").value.trim().toLowerCase();
+
+            let filteredTodos = todos.filter(todo => 
+                todo.taskTitle.toLowerCase().includes(query)
+            );
+            let sortedTodos = sortTodos(filteredTodos, sortBy);
+
+            updateTaskList(sortedTodos);
+            updatePaginationControls(sortedTodos.length);
+        });
+    }
+}
+
+
+window.nextPage = nextPage;
+window.prevPage = prevPage;
+
 
 
 
 
 
 export{saveTodo,saveTodoToLocal,getTodos,editTodo,deleteTodo
-    ,loadTodos,saveEditedTodo,updateTaskList,debounce,debouncedSearch,searchTodos ,sortTodos,updateSortOrder}
+    ,loadTodos,saveEditedTodo,updateTaskList,debounce,debouncedSearch,
+    searchTodos ,sortTodos,updateSortOrder,prevPage,nextPage,updatePaginationControls}
