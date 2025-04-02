@@ -19,11 +19,7 @@ function getUsers() {
 }
 
 
-
-
 //todo
-
-
 
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("addTaskBtn").addEventListener("click", () => {
@@ -55,7 +51,7 @@ function saveTodoToLocal(todo) {
 
 
 function getTodos(email) {
-    return new Promise((resolve) => {
+  return new Promise((resolve) => {
         setTimeout(() => {
             let todos = JSON.parse(localStorage.getItem("todos")) || [];
             if (!Array.isArray(todos)) { 
@@ -84,7 +80,11 @@ signupForm.addEventListener("submit", function (event) {
     };
     saveUser(user).then(() => alert("User registered"));
     signupForm.reset();
+    document.getElementById("form1").style.display = "none";
+        loadTodos(user.email);
+        document.getElementById("taskContainer").style.display = "block";
 });
+
 
 //  login
 const loginForm = document.getElementById("form2");
@@ -98,7 +98,8 @@ loginForm.addEventListener("submit", function (event) {
         if (user) {
             localStorage.setItem("loggedUser", JSON.stringify(user));
             alert("Login successful!");
-            loadTodos(user.email);
+            document.getElementById("form2").style.display = "none";
+            loadTodos(email);
             document.getElementById("taskContainer").style.display = "block";
         } else {
             alert("Invalid ");
@@ -112,7 +113,7 @@ loginForm.addEventListener("submit", function (event) {
 function saveTodo(taskTitle) {
     let user = JSON.parse(localStorage.getItem("loggedUser"));
     if (!user) {
-        alert("Please log in");
+        alert("first log in");
         return;
     }
 
@@ -126,21 +127,37 @@ function saveTodo(taskTitle) {
 
 
 
-function loadTodos(email) {
-    getTodos(email).then(todos => {
-        console.log("Loading tasks:", todos);
-        let taskBody = document.getElementById("taskBody");
-        taskBody.innerHTML = "";
-
-
-        todos.forEach(todo => {
-            let row = document.createElement("tr");
-            row.innerHTML = `<td>${todo.taskTitle}</td>
-                <td><button onclick="deleteTodo('${todo.taskTitle}')">Delete</button></td>`;
-            taskBody.appendChild(row);
+function loadTodos(email, todos = null) {
+    if (todos) {
+        updateTaskList(todos); 
+    } else {
+        getTodos(email).then(fetchedTodos => {
+            console.log("Loading tasks:", fetchedTodos);
+            updateTaskList(fetchedTodos); 
         });
+    }
+}
+
+
+function updateTaskList(todos) {
+    let taskBody = document.getElementById("taskBody");
+    taskBody.innerHTML = "";
+
+    todos.forEach(todo => {
+        let row = document.createElement("tr");
+        row.setAttribute("data-task", todo.taskTitle); 
+
+        row.innerHTML = `
+            <td class="task-title">${todo.taskTitle}</td>
+            <td><button onclick="editTodo('${todo.taskTitle}')">Edit</button></td>
+            <td><button onclick="deleteTodo('${todo.taskTitle}')">Delete</button></td>
+        `;
+
+        taskBody.appendChild(row);
     });
 }
+
+
 
 function deleteTodo(taskTitle) {
     let user = JSON.parse(localStorage.getItem("loggedUser"));
@@ -156,7 +173,94 @@ function deleteTodo(taskTitle) {
     localStorage.setItem("todos", JSON.stringify(updatedTodos)); 
     loadTodos(user.email); 
 }
-c
+
+
+function editTodo(oldTaskTitle) {
+    let user = JSON.parse(localStorage.getItem("loggedUser"));
+    if (!user) {
+        alert("Please log in first.");
+        return;
+    }
+
+    let taskRow = document.querySelector(`tr[data-task="${oldTaskTitle}"]`);
+    if (!taskRow) return;
+
+    let taskCell = taskRow.querySelector(".task-title");
+    let inputField = document.createElement("input");
+    inputField.type = "text";
+    inputField.value = oldTaskTitle;
+    inputField.id = `edit-input-${oldTaskTitle}`;
+
+    let saveButton = document.createElement("button");
+    saveButton.innerText = "Save";
+    saveButton.onclick = function () {
+        saveEditedTodo(oldTaskTitle);
+    };
+    taskCell.innerHTML = "";
+    taskCell.appendChild(inputField);
+    taskCell.appendChild(saveButton);
+}
+
+
+
+function saveEditedTodo(oldTaskTitle) {
+    let user = JSON.parse(localStorage.getItem("loggedUser"));
+    if (!user) {
+        alert("Please log in first.");
+        return;
+    }
+
+    let newTaskTitle = document.getElementById(`edit-input-${oldTaskTitle}`).value.trim();
+    if (newTaskTitle === "") {
+        alert("Task cannot be empty.");
+        return;
+    }
+
+    let allTodos = JSON.parse(localStorage.getItem("todos")) || [];
+
+   
+    let updatedTodos = allTodos.map(todo => {
+        if (todo.email === user.email && todo.taskTitle === oldTaskTitle) {
+            return { ...todo, taskTitle: newTaskTitle };
+        }
+        return todo;
+    });
+
+
+    localStorage.setItem("todos", JSON.stringify(updatedTodos));
+    loadTodos(user.email);
+}
+
+
+
+//search function
+
+function debounce(func, delay) {
+    let timer;
+    return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => func.apply(this, args), delay);
+    };
+}
+
+function searchTodos(query) {
+    let user = JSON.parse(localStorage.getItem("loggedUser"));
+    if (!user) return;
+
+    getTodos(user.email).then(todos => {
+        let filteredTodos = todos.filter(todo => 
+            todo.taskTitle.toLowerCase().includes(query.toLowerCase())
+        );
+
+        updateTaskList(filteredTodos);
+    });
+}
+
+const debouncedSearch = debounce(() => {
+    let query = document.getElementById("searchInput").value;
+    searchTodos(query);
+}, 300);
+
 
 
 

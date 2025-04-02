@@ -88,6 +88,7 @@
 
     <div id="taskContainer" style="display: none;">
         <h2>Task List</h2>
+        <input type="text" id="searchInput" placeholder="Search tasks" oninput="debouncedSearch()">
         <input type="text" id="taskInput" placeholder="Enter a task">
         <button id="addTaskBtn">Add Task</button>
 
