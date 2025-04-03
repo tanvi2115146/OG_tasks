@@ -43,7 +43,7 @@ function getTodos(email) {
 
 
 
-function saveTodo(taskTitle, priority = "Medium") {
+function saveTodo(taskTitle) {
     let user = JSON.parse(localStorage.getItem("loggedUser"));
     if (!user) {
         alert("First log in");
@@ -53,8 +53,7 @@ function saveTodo(taskTitle, priority = "Medium") {
     let todo = { 
         email: user.email, 
         taskTitle, 
-        status: "Pending", 
-        priority, 
+        status: "Pending",  
         createdAt: new Date().toISOString() 
     };
     
@@ -94,12 +93,12 @@ function updateTaskList(todos) {
         let row = document.createElement("tr");
         row.setAttribute("data-task", todo.taskTitle);
 
-        // Task Title Cell
+        // Task Title
         let taskCell = document.createElement("td");
         taskCell.textContent = todo.taskTitle;
         taskCell.classList.add("task-title");
 
-        // Status Dropdown Cell
+        // Status Dropdown 
         let statusCell = document.createElement("td");
         let statusDropdown = document.createElement("select");
         statusDropdown.innerHTML = `
@@ -110,11 +109,11 @@ function updateTaskList(todos) {
         statusDropdown.addEventListener("change", (event) => updateTaskStatus(todo.taskTitle, event.target.value));
         statusCell.appendChild(statusDropdown);
 
-        // Created Date Cell
+        //  Date 
         let dateCell = document.createElement("td");
         dateCell.textContent = new Date(todo.createdAt).toLocaleString(); 
 
-        // Edit and Delete Buttons
+        // Edit and Delete 
         let editButton = document.createElement("button");
         editButton.textContent = "Edit";
         editButton.addEventListener("click", () => editTodo(todo.taskTitle));
